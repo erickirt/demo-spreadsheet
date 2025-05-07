@@ -11,9 +11,12 @@ import { PreviewSpreadsheetChanges } from "./PreviewSpreadsheetChanges";
 interface MainAreaProps {
   spreadsheet: SpreadsheetData;
   setSpreadsheet: (spreadsheet: SpreadsheetData) => void;
+  spreadSheets: SpreadsheetData[];
+  selectedSpreadsheetIndex: number;
+  setSelectedSpreadsheetIndex: (index: number) => void;
 }
 
-const SingleSpreadsheet = ({ spreadsheet, setSpreadsheet }: MainAreaProps) => {
+const SingleSpreadsheet = ({ spreadsheet, setSpreadsheet, spreadSheets, selectedSpreadsheetIndex, setSelectedSpreadsheetIndex }: MainAreaProps) => {
   useCopilotReadable({
     description: "The current spreadsheet",
     value: spreadsheet,
@@ -54,7 +57,7 @@ const SingleSpreadsheet = ({ spreadsheet, setSpreadsheet }: MainAreaProps) => {
       const newRows = canonicalSpreadsheetData(rows);
 
       return (
-        <PreviewSpreadsheetChanges 
+        <PreviewSpreadsheetChanges
           preCommitTitle="Replace contents"
           postCommitTitle="Changes committed"
           newRows={newRows}
@@ -122,57 +125,79 @@ const SingleSpreadsheet = ({ spreadsheet, setSpreadsheet }: MainAreaProps) => {
   });
 
   return (
-    <div className="flex-1 overflow-auto p-5">
-      <input
-        type="text"
-        value={spreadsheet.title}
-        className="w-full p-2 mb-5 text-center text-2xl font-bold outline-none bg-transparent"
-        onChange={(e) =>
-          setSpreadsheet({ ...spreadsheet, title: e.target.value })
-        }
-      />
-      <div className="flex items-start">
-        <Spreadsheet
-          data={spreadsheet.rows}
-          onChange={(data) => {
-            console.log("data", data);
-            setSpreadsheet({ ...spreadsheet, rows: data as any });
-          }}
+    <>
+      <div className="flex-1 overflow-auto p-5">
+        <input
+          type="text"
+          value={spreadsheet.title}
+          className="w-full p-2 mb-5 text-center text-2xl font-bold outline-none bg-transparent"
+          onChange={(e) =>
+            setSpreadsheet({ ...spreadsheet, title: e.target.value })
+          }
         />
+        <div className="flex items-start">
+          <Spreadsheet
+            data={spreadsheet.rows}
+            onChange={(data) => {
+              console.log("data", data);
+              setSpreadsheet({ ...spreadsheet, rows: data as any });
+            }}
+          />
+          <button
+            className="bg-blue-500 text-white rounded-lg w-8 h-8 ml-5 "
+            onClick={() => {
+              // add an empty cell to each row
+              const spreadsheetRows = [...spreadsheet.rows];
+              for (let i = 0; i < spreadsheet.rows.length; i++) {
+                spreadsheet.rows[i].push({ value: "" });
+              }
+              setSpreadsheet({
+                ...spreadsheet,
+                rows: spreadsheetRows,
+              });
+            }}
+          >
+            +
+          </button>
+        </div>
         <button
-          className="bg-blue-500 text-white rounded-lg ml-6 w-8 h-8 mt-0.5"
+          style={{ marginBottom: 200 }}
+          className="bg-blue-500 text-white rounded-lg w-8 h-8 mt-5 "
           onClick={() => {
-            // add an empty cell to each row
-            const spreadsheetRows = [...spreadsheet.rows];
-            for (let i = 0; i < spreadsheet.rows.length; i++) {
-              spreadsheet.rows[i].push({ value: "" });
+            const numberOfColumns = spreadsheet.rows[0].length;
+            const newRow: SpreadsheetRow = [];
+            for (let i = 0; i < numberOfColumns; i++) {
+              newRow.push({ value: "" });
             }
             setSpreadsheet({
               ...spreadsheet,
-              rows: spreadsheetRows,
+              rows: [...spreadsheet.rows, newRow],
             });
           }}
         >
           +
         </button>
       </div>
-      <button
-        className="bg-blue-500 text-white rounded-lg w-8 h-8 mt-5 "
-        onClick={() => {
-          const numberOfColumns = spreadsheet.rows[0].length;
-          const newRow: SpreadsheetRow = [];
-          for (let i = 0; i < numberOfColumns; i++) {
-            newRow.push({ value: "" });
-          }
-          setSpreadsheet({
-            ...spreadsheet,
-            rows: [...spreadsheet.rows, newRow],
-          });
-        }}
-      >
-        +
-      </button>
-    </div>
+      <div >
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-100 text-white flex items-center justify-between p-2 shadow-lg">
+          <div className="flex space-x-2">
+            {/* Replace with dynamic sheet buttons */}
+            {spreadSheets.map((sheet, index) => (
+              <button
+                key={index}
+                className={`${selectedSpreadsheetIndex == index ? "bg-blue-100 text-blue-600 font-bold" : "bg-gray-100 text-black"} px-4 py-2 rounded hover:bg-gray-300 transition`}
+                onClick={() => {
+                  setSelectedSpreadsheetIndex(index);
+                }}
+              >
+                {sheet.title}
+              </button>
+            ))}
+          </div>
+
+        </div>
+      </div>
+    </>
   );
 };
 
