@@ -9,23 +9,24 @@ import {
   useCopilotAction,
   useCopilotReadable,
 } from "@copilotkit/react-core";
-import { CopilotSidebar } from "@copilotkit/react-ui";
+import { CopilotSidebar, useCopilotChatSuggestions } from "@copilotkit/react-ui";
 import { INSTRUCTIONS } from "./instructions";
 import { canonicalSpreadsheetData } from "./utils/canonicalSpreadsheetData";
 import { SpreadsheetData } from "./types";
 import { PreviewSpreadsheetChanges } from "./components/PreviewSpreadsheetChanges";
+// import { Bottombar } from "./components/Bottombar";
 
 const HomePage = () => {
   return (
     <CopilotKit
-      runtimeUrl="/api/copilotkit"
+      runtimeUrl="api/copilotkit"
       transcribeAudioUrl="/api/transcribe"
       textToSpeechUrl="/api/tts"
     >
       <CopilotSidebar
         instructions={INSTRUCTIONS}
         labels={{
-          initial: "Welcome to the spreadsheet app! How can I help you?",
+          initial: "Welcome to the spreadsheet app!  What would you like help with?",
         }}
         defaultOpen={true}
         clickOutsideToClose={false}
@@ -36,16 +37,39 @@ const HomePage = () => {
   );
 };
 
+function rowsGenerator(n : number) {
+  const rows = [];
+
+  for (let i = 0; i < 25; i++) {
+    const row = [];
+
+    for (let j = 0; j < 25; j++) {
+      if (i < n && j < n) {
+        row.push({ value: "Sample data" });
+      }
+      else {
+        row.push({ value: "" });
+      }
+
+    }
+    rows.push(row);
+
+  }
+  return rows;
+
+}
+
 const Main = () => {
   const [spreadsheets, setSpreadsheets] = React.useState<SpreadsheetData[]>([
     {
       title: "Spreadsheet 1",
-      rows: [
-        [{ value: "" }, { value: "" }, { value: "" }],
-        [{ value: "" }, { value: "" }, { value: "" }],
-        [{ value: "" }, { value: "" }, { value: "" }],
-      ],
+      rows: rowsGenerator(20),
     },
+    {
+      title: "Spreadsheet 2",
+      rows: rowsGenerator(10),
+    },
+
   ]);
 
   const [selectedSpreadsheetIndex, setSelectedSpreadsheetIndex] = useState(0);
@@ -105,6 +129,11 @@ const Main = () => {
     },
   });
 
+  useCopilotChatSuggestions({
+    instructions : "Provide suggestions for the user like creating a new sheet with sample data, appending rows, telling them about this view. Strictly show only these options at the start of the chat.",
+    maxSuggestions : 3,
+    minSuggestions : 1
+  })
   useCopilotReadable({
     description: "Today's date",
     value: new Date().toLocaleDateString(),
@@ -112,12 +141,15 @@ const Main = () => {
 
   return (
     <div className="flex">
-      <Sidebar
+      {/* <Sidebar
         spreadsheets={spreadsheets}
         selectedSpreadsheetIndex={selectedSpreadsheetIndex}
         setSelectedSpreadsheetIndex={setSelectedSpreadsheetIndex}
-      />
+      /> */}
       <SingleSpreadsheet
+        spreadSheets={spreadsheets}
+        selectedSpreadsheetIndex={selectedSpreadsheetIndex}
+        setSelectedSpreadsheetIndex={setSelectedSpreadsheetIndex}
         spreadsheet={spreadsheets[selectedSpreadsheetIndex]}
         setSpreadsheet={(spreadsheet) => {
           setSpreadsheets((prev) => {
