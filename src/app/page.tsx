@@ -2,7 +2,6 @@
 import "@copilotkit/react-ui/styles.css";
 
 import React, { useState } from "react";
-import Sidebar from "./components/Sidebar";
 import SingleSpreadsheet from "./components/SingleSpreadsheet";
 import {
   CopilotKit,
@@ -77,7 +76,7 @@ const Main = () => {
 
   useCopilotAction({
     name: "createSpreadsheet",
-    description: "Create a new  spreadsheet",
+    description: "Create a new spreadsheet",
     parameters: [
       {
         name: "rows",
@@ -105,6 +104,7 @@ const Main = () => {
       },
     ],
     render: (props) => {
+      console.log("createSpreadsheet => props: => ", props)
       const { rows, title } = props.args;
       const newRows = canonicalSpreadsheetData(rows);
 
@@ -131,9 +131,9 @@ const Main = () => {
   });
 
   useCopilotChatSuggestions({
-    instructions : "Provide suggestions for the user like creating a new sheet with sample data, appending rows, telling them about this view. Strictly show only these options at the start of the chat.",
-    maxSuggestions : 3,
-    minSuggestions : 1
+    instructions: "Provide suggestions for the user like creating a new sheet with sample data, appending rows, telling them about this view. Strictly show only these options at the start of the chat.",
+    maxSuggestions: 3,
+    minSuggestions: 1
   })
   useCopilotReadable({
     description: "Today's date",
@@ -142,11 +142,6 @@ const Main = () => {
 
   return (
     <div className="flex">
-      {/* <Sidebar
-        spreadsheets={spreadsheets}
-        selectedSpreadsheetIndex={selectedSpreadsheetIndex}
-        setSelectedSpreadsheetIndex={setSelectedSpreadsheetIndex}
-      /> */}
       <SingleSpreadsheet
         spreadSheets={spreadsheets}
         selectedSpreadsheetIndex={selectedSpreadsheetIndex}
