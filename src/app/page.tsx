@@ -14,6 +14,7 @@ import { INSTRUCTIONS } from "./instructions";
 import { canonicalSpreadsheetData } from "./utils/canonicalSpreadsheetData";
 import { SpreadsheetData } from "./types";
 import { PreviewSpreadsheetChanges } from "./components/PreviewSpreadsheetChanges";
+import { sampleData, sampleData2 } from "./utils/sampleData";
 // import { Bottombar } from "./components/Bottombar";
 
 const HomePage = () => {
@@ -37,37 +38,37 @@ const HomePage = () => {
   );
 };
 
-function rowsGenerator(n : number) {
-  const rows = [];
+// function rowsGenerator(n : number) {
+//   const rows = [];
 
-  for (let i = 0; i < 25; i++) {
-    const row = [];
+//   for (let i = 0; i < 25; i++) {
+//     const row = [];
 
-    for (let j = 0; j < 25; j++) {
-      if (i < n && j < n) {
-        row.push({ value: "Sample data" });
-      }
-      else {
-        row.push({ value: "" });
-      }
+//     for (let j = 0; j < 25; j++) {
+//       if (i < n && j < n) {
+//         row.push({ value: "Sample data" });
+//       }
+//       else {
+//         row.push({ value: "" });
+//       }
 
-    }
-    rows.push(row);
+//     }
+//     rows.push(row);
 
-  }
-  return rows;
+//   }
+//   return rows;
 
-}
+// }
 
 const Main = () => {
   const [spreadsheets, setSpreadsheets] = React.useState<SpreadsheetData[]>([
     {
-      title: "Spreadsheet 1",
-      rows: rowsGenerator(20),
+      title: "Revenue by department",
+      rows: sampleData,
     },
     {
-      title: "Spreadsheet 2",
-      rows: rowsGenerator(10),
+      title: "Projects Tracker",
+      rows: sampleData2,
     },
 
   ]);
