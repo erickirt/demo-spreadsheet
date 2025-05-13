@@ -139,7 +139,7 @@ export async function researchWithLangGraph(topic: string) {
       configurable: { thread_id: "research-" + Date.now(), checkpoint_id: "1" },
     }
   );
-  return result.agentState.article.replace(
+  return result?.agentState?.article?.replace(
     /<FEEDBACK>[\s\S]*?<\/FEEDBACK>/g,
     ""
   );
